@@ -94,45 +94,55 @@ class RespuestasController extends Controller
         $id = null;
         $indices = array();
         $inicio = true;
-        foreach ($input as $key => $value) {
-            $valores = (object)$value;
-            $id = (isset($valores->resp_id) ? $valores->resp_id : null);
-            if ($id !== null) {
-                $resp_id = isset($valores->resp_id) ? $valores->resp_id : null;
-                $request2 = new Request([
-                    'preg_id' => isset($valores->preg_id) ? $valores->preg_id : null,
-                    'resp_desc' => isset($valores->resp_id) ? $valores->resp_id : null,
-                    'modu_nume' => isset($valores->modu_nume) ? $valores->modu_nume : null,
-                    'canv_id' => isset($valores->canv_id) ? $valores->canv_id : null,
-                    'resp_nume' => isset($valores->resp_nume) ? $valores->resp_nume : null,
-                    'resp_text' => isset($valores->resp_text) ? $valores->resp_text : null,
-                    'resp_desc' => isset($valores->resp_desc) ? $valores->resp_desc : null,
-                    'resp_esta' => 1,
-                ]);
-                $request2->validate([
-                    'canv_id' => 'required|numeric|digits_between:1,11',
-                    //'resp_nume' => 'required|numeric|digits_between:1,5',
-                    'modu_nume' => 'required|numeric|digits_between:1,5',
-                    'resp_text' => 'required'
-                ]);
-                $respuestas = Respuesta::find($id);
-                if ($inicio === true) {
+        // return response()->json([
+        //     'input' => $input,
+        // ]);
+            foreach ($input as $key => $value) {
+                $valores = (object)$value;
+                $id = (isset($valores->resp_id) ? $valores->resp_id : null);
+                if ($id !== null) {
+                    $resp_id = isset($valores->resp_id) ? $valores->resp_id : null;
+                    $request2 = new Request([
+                        'preg_id' => isset($valores->preg_id) ? $valores->preg_id : null,
+                        'resp_desc' => isset($valores->resp_id) ? $valores->resp_id : null,
+                        'modu_nume' => isset($valores->modu_nume) ? $valores->modu_nume : null,
+                        'canv_id' => isset($valores->canv_id) ? $valores->canv_id : null,
+                        'resp_nume' => isset($valores->resp_nume) ? $valores->resp_nume : null,
+                        'resp_text' => isset($valores->resp_text) ? $valores->resp_text : null,
+                        'resp_desc' => isset($valores->resp_desc) ? $valores->resp_desc : null,
+                        'resp_esta' => 1,
+                    ]);
+                    $request2->validate([
+                        'canv_id' => 'required|numeric|digits_between:1,11',
+                        //'resp_nume' => 'required|numeric|digits_between:1,5',
+                        'modu_nume' => 'required|numeric|digits_between:1,5',
+                        'resp_text' => 'required'
+                    ]);
+                    $respuestas = Respuesta::find($id);
+                    if ($inicio === true) {
+                        $indices = $this->getIndexArray($request2->get('canv_id'));
+                        $inicio = false;
+                    }
+                    $indices = $this->deleteRespNotFound($indices, $resp_id);
+
+                    //return response()->json(['indices'=>$indices,'momi'=>$request2->get('canv_id')], 201);
+                    if ($respuestas != null) {
+
+                        $respuestas->update($request2->all());
+                        //return response()->json($respuestas, 201);
+                    } else {
+                        $respuesta3 = Respuesta::create($request2->all());
+                        //return response()->json($respuesta3, 201);
+                    }
+                }else{
+                    $resp_id = isset($valores->resp_id) ? $valores->resp_id : null;
+                    $request2 = new Request([
+                        'canv_id' => isset($valores->canv_id) ? $valores->canv_id : null,
+                    ]);
                     $indices = $this->getIndexArray($request2->get('canv_id'));
-                    $inicio = false;
-                }
-                $indices = $this->deleteRespNotFound($indices, $resp_id);
-
-                //return response()->json(['indices'=>$indices,'momi'=>$request2->get('canv_id')], 201);
-                if ($respuestas != null) {
-
-                    $respuestas->update($request2->all());
-                    //return response()->json($respuestas, 201);
-                } else {
-                    $respuesta3 = Respuesta::create($request2->all());
-                    //return response()->json($respuesta3, 201);
+                    $indices = $this->deleteRespNotFound($indices, $resp_id);
                 }
             }
-        }
         //return response()->json(['indices' => $indices,], 201);
         $this->removeResps($indices);
         $uniqId = $this->unique_code(9);

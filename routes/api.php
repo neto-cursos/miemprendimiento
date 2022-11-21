@@ -64,6 +64,7 @@ Route::post('checkifemprhascron',[CronogramasController::class,'checkIfEmprHasCr
 Route::post('updatecron',[CronogramasController::class,'actualizarCrons']);
 Route::post('deletecron',[CronogramasController::class,'deleteCron']);
 Route::post('listcron',[CronogramasController::class,'listCrons']);
+Route::post('listallcron',[CronogramasController::class,'listAllCrons']);
 
 //Route::get('/tickets',[TicketController::class,'index'])->middleware('auth:sanctum');
 /*

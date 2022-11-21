@@ -18,6 +18,7 @@ class AuthController extends Controller
     public function register(RegisterFormRequest $request): JsonResponse
     {
         //dd($request->all());
+        
         $user = User::create([
             'name' => $request->get('name'),
             'apellido' => $request->get('apellido'),

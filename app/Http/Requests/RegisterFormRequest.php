@@ -26,11 +26,11 @@ class RegisterFormRequest extends FormRequest
     {
         return [
             //
-            'name'=>['required','string','max:255'],
-            'apellido'=>['required','string','max:255'],
+            'name'=>['required','string','max:255','min:3'],
+            'apellido'=>['required','string','max:255','min:3'],
             'email'=>['required','string','email','max:255','unique:users'],
             //'clie_pass'=>['required','string',Password::min(8)->uncompromised()],
-            'password'=>['required','string',Password::min(8)],
+            'password'=>['required','string',Password::min(5)],
         ];
     }
 }

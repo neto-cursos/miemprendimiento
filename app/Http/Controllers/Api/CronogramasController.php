@@ -163,6 +163,95 @@ class CronogramasController extends Controller
         ], 401);
     }
 
+    public function listAllCrons(Request $request){
+        if ($request->get('id')) {
+            $crons=Cronograma::join(
+                'emprendimientos','emprendimientos.empr_id','=','cronogramas.empr_id'
+            )->where('emprendimientos.id','=',$request->get('id'))
+            ->select('cronogramas.*')->get();
+            $indice=0;
+            $result=array();
+            
+
+            foreach ($crons as $key => $value) {
+                // print_r((array)$result[$key]);
+                // return response()->json((array)$this->prepareCrons($value['cron_id']));
+                // $result = array_merge((array)$result[$key], (array)$this->prepareCrons($value['cron_id']));
+                $result[$key][$indice]=$crons[$key];
+                $activities=$this->prepareCrons($value['cron_id']);
+                foreach ($activities as $key2 => $value2) {
+                    $result[$key][$indice]=$activities[$key2];
+                    $indice++;
+                }
+                // return response()->json($crons[1]);
+                // $crons[$key]['cron']=$this->prepareCrons($value['cron_id']);
+                $indice=0;
+            }
+            return response()->json([
+                         'crons'=>$result,
+                     ], 201);
+
+            // if (count($crons)>0) {
+            //     $cron_emprid = Cronograma::select('cron_id')->where('empr_id', $request->get('empr_id'))->first();
+            //     return response()->json([
+            //         'habilitado' => 'no',
+            //         'cron_id'=>$cron_emprid->cron_id,
+            //     ], 201);
+            // } else {
+            //     return response()->json([
+            //         'habilitado' => 'yes',
+            //     ], 201);
+            // }
+        }
+    }
+    public function prepareCrons($cron_id)
+    {
+        $data=array();
+
+        if ($cron_id) {
+            $cronograma=Cronograma::where('cron_id','=',$cron_id)->get();
+            $data[0]['id']=$cronograma[0]['cron_id'];
+            $data[0]['empr_id']=$cronograma[0]['empr_id'];
+            $data[0]['start']=$cronograma[0]['cron_fech_inic'];
+            $data[0]['end']=$cronograma[0]['cron_fech_fin'];
+            $data[0]['hideChildren']=$cronograma[0]['cron_hide_child'];
+            $data[0]['type']=$cronograma[0]['cron_type'];
+            $data[0]['cron_done']=$cronograma[0]['cron_done'];
+            $data[0]['cron_resp']=$cronograma[0]['cron_resp'];
+            $data[0]['name']=$cronograma[0]['cron_proy'];
+            $data[0]['progress']=$cronograma[0]['progress'];
+            $data[0]['displayorder']=1;
+            $actividades=CronActividade::where('cron_id','=',$cron_id)
+            ->get();
+            $data2=$actividades;
+            $indice=1;
+            $index=0;
+            foreach ($actividades as $key => $value) {
+                $data[$indice]=$value;
+                
+                $temp=CronDependencia::where('id',$value->id)->get();
+                if(sizeof($temp)>0){
+                $dependencias[$index]=$temp;
+                foreach($dependencias[$index] as $key2=>$value2){
+                    // print_r($dependencias[$index][$key2]->cron_dep_tareas."\n");
+                    $data[$indice]['dependencies']=$data[$indice]['dependencies']."".$dependencias[$index][$key2]->cron_dep_tareas.",";
+                }
+                // print_r($dependencias[$index]."\n");
+                $index++;
+                }
+                // foreach($dependencias as $key3=>$value3){
+                //     foreach($dependencias[$key3] as $key4=>$value4)
+                //     print_r($dependencias[$key3][$key4]->cron_dep_tareas."\n");
+                //     //print_r($dependencias[$key3][0]->cron_dep_tareas."\n");
+                //     // $data[$indice]['dependencies']=$data[$indice]['dependencies']."".$dependencias[$key3][0]->cron_dep_tareas.",";
+
+                // }   
+                $indice++;
+            }
+            return $data;
+        }
+        return null;
+    }
     public function listCrons(Request $request)
     {
         $data=array();

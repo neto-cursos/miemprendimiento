@@ -91,7 +91,7 @@ class CanvasController extends Controller
         //$input=$request->input()
         $input = $request->all();
         $valores=new Canva;
-        $id=null;
+        $id=null;    
         foreach ($input as $key => $value) {
             $valores=(object)$value;
             $id=(isset($valores->resp_id)?$valores->resp_id:null);
