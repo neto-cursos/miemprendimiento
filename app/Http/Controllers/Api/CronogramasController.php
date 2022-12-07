@@ -22,40 +22,58 @@ class CronogramasController extends Controller
     public function registerCronWithEmpr(Request $request)
     {
         //request()->validate(Cronograma::$rules);
-        if ($request->get('empr_id')) {
-            $emprendimiento = Emprendimiento::where('empr_id', $request->get('empr_id'))->get();
-        }
-        $request2 = new Request([
-            'cron_id' => ($request->get('id')) ? $request->get('id') : null,
-            'empr_id' => ($request->get('empr_id')) ? $request->get('empr_id') : null,
-            'cron_fech_inic' => ($request->get('start')) ? $request->get('start') : null,
-            'cron_fech_fin' => ($request->get('end')) ? $request->get('end') : null,
-            'cron_proy' => ($request->get('name')) ? $request->get('name') : null,
-            // 'cron_desc' => isset($valores->name) ? $valores->name : null,
-            'cron_type' => ($request->get('type')) ? $request->get('type') : null,
-            'cron_hide_child' => ($request->get('hideChildren')) ? $request->get('hideChildren') : false,
-            'cron_done' => ($request->get('cron_done')) ? $request->get('cron_done') : false,
-            'cron_resp' => ($request->get('cron_resp')) ? $request->get('cron_resp') : '',
-            // 'cron_costo_total'=>
-            // 'progress'=>,
-        ]);
+        $id_cron = ($request->get('cron_id') ? $request->get('cron_id') : null);
+        $empr_id = $request->get('empr_id') ? $request->get('empr_id') : null;
+        if ($empr_id != null && $id_cron!=null) {
+            $cron_empr = Cronograma::select('cron_id')->where('empr_id', $empr_id)->count();
+            if ($cron_empr > 0) {
+                $cron_emprid = Cronograma::select('cron_id')->where('empr_id', $empr_id)->first();
+                if ($cron_emprid->cron_id != $id_cron) {
+                    return response()->json([
+                        'error' => 'este emprendimiento tiene otro cronograma registrado',
+                    ], 201);
+                }
+            } else {
+                $request5 = new Request([
+                    'cron_id' => ($request->get('cron_id')) ? $request->get('cron_id') : null,
+                    'empr_id' => ($request->get('empr_id')) ? $request->get('empr_id') : null,
+                    'cron_fech_inic' => ($request->get('start')) ? $request->get('start') : null,
+                    'cron_fech_fin' => ($request->get('end')) ? $request->get('end') : null,
+                    'cron_proy' => ($request->get('name')) ? $request->get('name') : null,
+                    // 'cron_desc' => isset($valores->name) ? $valores->name : null,
+                    'cron_type' => ($request->get('type')) ? $request->get('type') : null,
+                    'cron_hide_child' => ($request->get('hideChildren')) ? $request->get('hideChildren') : false,
+                    'cron_done' => ($request->get('cron_done')) ? $request->get('cron_done') : false,
+                    'cron_resp' => ($request->get('cron_resp')) ? $request->get('cron_resp') : '',
+                    // 'cron_costo_total'=>
+                    // 'progress'=>,
+                ]);
 
-        $request2->validate([
-            'cron_id' => 'required|unique:cronogramas,cron_id',
-            'empr_id' => 'required|numeric|digits_between:1,10',
-            'cron_fech_inic' => 'required',
-            'cron_fech_fin' => 'required',
-            'cron_proy' => 'required',
-            'cron_type' => 'required',
-            'cron_hide_child' => 'required',
-            'cron_done' => 'required',
-            'cron_resp' => 'required',
-        ]);
+                $request5->validate([
+                    'cron_id' => 'required|unique:cronogramas,cron_id',
+                    'empr_id' => 'required|numeric|digits_between:1,10',
+                    'cron_fech_inic' => 'required',
+                    'cron_fech_fin' => 'required',
+                    'cron_proy' => 'required',
+                    'cron_type' => 'required',
+                    'cron_hide_child' => 'required',
+                    'cron_done' => 'required',
+                    // 'cron_resp' => 'required',
+                ]);
 
-        $cron_empr = Cronograma::select('cron_id')->where('empr_id', $request->get('empr_id'))->count();
-        if ($cron_empr == 0) {
-            $respuesta = Cronograma::create($request2->all());
+                $respuesta = Cronograma::create($request5->all());
+            }
+        }else{
+            return response()->json([
+                'error' => 'no envió un código de emprendimiento o un cron_id válido',
+            ], 201);
         }
+
+
+        // $cron_empr = Cronograma::select('cron_id')->where('empr_id', $request->get('empr_id'))->count();
+        // if ($cron_empr == 0) {
+        //     $respuesta = Cronograma::create($request2->all());
+        // }
 
 
         return response()->json([
@@ -66,7 +84,8 @@ class CronogramasController extends Controller
     public function actualizarCrons(Request $request)
     {
         $input = $request->all();
-        $valores = new Cronograma;
+        // $valores = new Cronograma;
+        $valores = null;
         $id_acti = null;
         $id_cron = null;
         $c = true;
@@ -75,8 +94,52 @@ class CronogramasController extends Controller
         foreach ($input as $key => $value) {
 
             $valores = (object)$value;
+            // return response()->json([
+            //     'resultado' => $valores,
+            // ], 201);
             if ($c == true) {
-                $id_cron = (isset($valores->id) ? $valores->id : null);
+                $id_cron = (isset($valores->cron_id) ? $valores->cron_id : null);
+                $empr_id = (isset($valores->empr_id) ? $valores->empr_id : null);
+                if ($empr_id != null) {
+                    $cron_empr = Cronograma::select('cron_id')->where('empr_id', $empr_id)->count();
+                    if ($cron_empr > 0) {
+                        $cron_emprid = Cronograma::select('cron_id')->where('empr_id', $empr_id)->first();
+                        if ($cron_emprid->cron_id != $id_cron) {
+                            return response()->json([
+                                'error' => 'este emprendimiento tiene otro cronograma registrado',
+                            ], 201);
+                        }
+                    } else {
+                        $request5 = new Request([
+                            'cron_id' => (isset($valores->cron_id)) ? $valores->cron_id : null,
+                            'empr_id' => (isset($valores->empr_id)) ? $valores->empr_id : null,
+                            'cron_fech_inic' => (isset($valores->start)) ? $valores->start : null,
+                            'cron_fech_fin' => (isset($valores->end)) ? $valores->end : null,
+                            'cron_proy' => (isset($valores->name)) ? $valores->name : null,
+                            // 'cron_desc' => isset($valores->name) ? $valores->name : null,
+                            'cron_type' => (isset($valores->type)) ? $valores->type : null,
+                            'cron_hide_child' => (isset($valores->hideChildren)) ? $valores->hideChildren : false,
+                            'cron_done' => (isset($valores->cron_done)) ? $valores->cron_done : false,
+                            'cron_resp' => (isset($valores->cron_resp)) ? $valores->cron_resp : '',
+                            // 'cron_costo_total'=>
+                            // 'progress'=>,
+                        ]);
+
+                        $request5->validate([
+                            'cron_id' => 'required|unique:cronogramas,cron_id',
+                            'empr_id' => 'required|numeric|digits_between:1,10',
+                            'cron_fech_inic' => 'required',
+                            'cron_fech_fin' => 'required',
+                            'cron_proy' => 'required',
+                            'cron_type' => 'required',
+                            'cron_hide_child' => 'required',
+                            'cron_done' => 'required',
+                            // 'cron_resp' => 'required',
+                        ]);
+
+                        $respuesta = Cronograma::create($request5->all());
+                    }
+                }
                 $c = false;
             } else {
                 $id_acti = (isset($valores->id) ? $valores->id : null);
@@ -88,15 +151,16 @@ class CronogramasController extends Controller
                     }
                     $request2 = new Request([
                         'id' => isset($valores->id) ? $valores->id : null,
-                        'emmpr_id' => isset($valores->empr_id) ? $valores->empr_id : null,
+                        'cron_id' => $id_cron != null ? $id_cron : null,
+                        'empr_id' => isset($valores->empr_id) ? $valores->empr_id : null,
                         'type' => isset($valores->type) ? $valores->type : null,
                         'project' => isset($valores->project) ? $valores->project : null,
-                        'displayorder' => isset($valores->displayOrder) ? $valores->displayOrder : null,
+                        'displayorder' => isset($valores->displayorder) ? $valores->displayorder : null,
                         'name' => isset($valores->name) ? $valores->name : null,
                         'start' => isset($valores->start) ? $valores->start : null,
                         'end' => isset($valores->end) ? $valores->end : null,
                         'responsable' => isset($valores->responsable) ? $valores->responsable : null,
-                        'dependencies' => isset($valores->dependencies) ? $valores->dependencies : null,
+                        'dependencies' => isset($valores->dependencies) ? null : null,
                         'cantidad' => isset($valores->cantidad) ? $valores->cantidad : null,
                         'unidad' => isset($valores->unidad) ? $valores->unidad : null,
                         'costounitario' => isset($valores->costounitario) ? $valores->costounitario : null,
@@ -110,6 +174,7 @@ class CronogramasController extends Controller
                     if ($cronogramas != null) {
                         $request2->validate([
                             'id' => 'required',
+                            'cron_id' => 'required',
                             'empr_id' => 'required|numeric|digits_between:1,10',
                             'type' => 'required',
                             'project' => 'required',
@@ -163,33 +228,37 @@ class CronogramasController extends Controller
         ], 401);
     }
 
-    public function listAllCrons(Request $request){
+    public function listAllCrons(Request $request)
+    {
         if ($request->get('id')) {
-            $crons=Cronograma::join(
-                'emprendimientos','emprendimientos.empr_id','=','cronogramas.empr_id'
-            )->where('emprendimientos.id','=',$request->get('id'))
-            ->select('cronogramas.*')->get();
-            $indice=0;
-            $result=array();
-            
+            $crons = Cronograma::join(
+                'emprendimientos',
+                'emprendimientos.empr_id',
+                '=',
+                'cronogramas.empr_id'
+            )->where('emprendimientos.id', '=', $request->get('id'))
+                ->select('cronogramas.*')->get();
+            $indice = 0;
+            $result = array();
+
 
             foreach ($crons as $key => $value) {
                 // print_r((array)$result[$key]);
                 // return response()->json((array)$this->prepareCrons($value['cron_id']));
                 // $result = array_merge((array)$result[$key], (array)$this->prepareCrons($value['cron_id']));
-                $result[$key][$indice]=$crons[$key];
-                $activities=$this->prepareCrons($value['cron_id']);
+                $result[$key][$indice] = $crons[$key];
+                $activities = $this->prepareCrons($value['cron_id']);
                 foreach ($activities as $key2 => $value2) {
-                    $result[$key][$indice]=$activities[$key2];
+                    $result[$key][$indice] = $activities[$key2];
                     $indice++;
                 }
                 // return response()->json($crons[1]);
                 // $crons[$key]['cron']=$this->prepareCrons($value['cron_id']);
-                $indice=0;
+                $indice = 0;
             }
             return response()->json([
-                         'crons'=>$result,
-                     ], 201);
+                'crons' => $result,
+            ], 201);
 
             // if (count($crons)>0) {
             //     $cron_emprid = Cronograma::select('cron_id')->where('empr_id', $request->get('empr_id'))->first();
@@ -206,38 +275,39 @@ class CronogramasController extends Controller
     }
     public function prepareCrons($cron_id)
     {
-        $data=array();
+        $data = array();
 
         if ($cron_id) {
-            $cronograma=Cronograma::where('cron_id','=',$cron_id)->get();
-            $data[0]['id']=$cronograma[0]['cron_id'];
-            $data[0]['empr_id']=$cronograma[0]['empr_id'];
-            $data[0]['start']=$cronograma[0]['cron_fech_inic'];
-            $data[0]['end']=$cronograma[0]['cron_fech_fin'];
-            $data[0]['hideChildren']=$cronograma[0]['cron_hide_child'];
-            $data[0]['type']=$cronograma[0]['cron_type'];
-            $data[0]['cron_done']=$cronograma[0]['cron_done'];
-            $data[0]['cron_resp']=$cronograma[0]['cron_resp'];
-            $data[0]['name']=$cronograma[0]['cron_proy'];
-            $data[0]['progress']=$cronograma[0]['progress'];
-            $data[0]['displayorder']=1;
-            $actividades=CronActividade::where('cron_id','=',$cron_id)
-            ->get();
-            $data2=$actividades;
-            $indice=1;
-            $index=0;
+            $cronograma = Cronograma::where('cron_id', '=', $cron_id)->get();
+            $data[0]['id'] = '1';
+            $data[0]['cron_id'] = $cronograma[0]['cron_id'];
+            $data[0]['empr_id'] = $cronograma[0]['empr_id'];
+            $data[0]['start'] = $cronograma[0]['cron_fech_inic'];
+            $data[0]['end'] = $cronograma[0]['cron_fech_fin'];
+            $data[0]['hideChildren'] = $cronograma[0]['cron_hide_child']==0?false:true;
+            $data[0]['type'] = $cronograma[0]['cron_type'];
+            $data[0]['cron_done'] = $cronograma[0]['cron_done'];
+            $data[0]['cron_resp'] = $cronograma[0]['cron_resp'];
+            $data[0]['name'] = $cronograma[0]['cron_proy'];
+            $data[0]['progress'] = $cronograma[0]['progress'];
+            $data[0]['displayorder'] = 1;
+            $actividades = CronActividade::where('cron_id', '=', $cron_id)
+                ->get();
+            $data2 = $actividades;
+            $indice = 1;
+            $index = 0;
             foreach ($actividades as $key => $value) {
-                $data[$indice]=$value;
-                
-                $temp=CronDependencia::where('id',$value->id)->get();
-                if(sizeof($temp)>0){
-                $dependencias[$index]=$temp;
-                foreach($dependencias[$index] as $key2=>$value2){
-                    // print_r($dependencias[$index][$key2]->cron_dep_tareas."\n");
-                    $data[$indice]['dependencies']=$data[$indice]['dependencies']."".$dependencias[$index][$key2]->cron_dep_tareas.",";
-                }
-                // print_r($dependencias[$index]."\n");
-                $index++;
+                $data[$indice] = $value;
+
+                $temp = CronDependencia::where('id', $value->id)->get();
+                if (sizeof($temp) > 0) {
+                    $dependencias[$index] = $temp;
+                    foreach ($dependencias[$index] as $key2 => $value2) {
+                        // print_r($dependencias[$index][$key2]->cron_dep_tareas."\n");
+                        $data[$indice]['dependencies'] = $data[$indice]['dependencies'] . "" . $dependencias[$index][$key2]->cron_dep_tareas . ",";
+                    }
+                    // print_r($dependencias[$index]."\n");
+                    $index++;
                 }
                 // foreach($dependencias as $key3=>$value3){
                 //     foreach($dependencias[$key3] as $key4=>$value4)
@@ -254,7 +324,7 @@ class CronogramasController extends Controller
     }
     public function listCrons(Request $request)
     {
-        $data=array();
+        $data = array();
 
         // $request2 = new Request([
         //     'id' => ($request->get('id')) ? $request->get('id') : null,
@@ -272,35 +342,34 @@ class CronogramasController extends Controller
         // ]);
 
         if ($request->get('cron_id')) {
-            $cronograma=Cronograma::where('cron_id','=',$request->get('cron_id'))->get();
+            $cronograma = Cronograma::where('cron_id', '=', $request->get('cron_id'))->get();
             //$data=$cronograma;
             // dd($cronograma[0]['cron_id']);
-            $data['id']=$cronograma[0]['cron_id'];
-            $data['empr_id']=$cronograma[0]['empr_id'];
-            $data['start']=$cronograma[0]['cron_fech_inic'];
-            $data['end']=$cronograma[0]['cron_fech_fin'];
-            $data['hideChildren']=$cronograma[0]['cron_hide_child'];
-            $data['type']=$cronograma[0]['cron_type'];
-            $data['cron_done']=$cronograma[0]['cron_done'];
-            $data['cron_resp']=$cronograma[0]['cron_resp'];
-            $data['progress']=$cronograma[0]['progress'];
+            $data['id'] = $cronograma[0]['cron_id'];
+            $data['empr_id'] = $cronograma[0]['empr_id'];
+            $data['start'] = $cronograma[0]['cron_fech_inic'];
+            $data['end'] = $cronograma[0]['cron_fech_fin'];
+            $data['hideChildren'] = $cronograma[0]['cron_hide_child'];
+            $data['type'] = $cronograma[0]['cron_type'];
+            $data['cron_done'] = $cronograma[0]['cron_done'];
+            $data['cron_resp'] = $cronograma[0]['cron_resp'];
+            $data['progress'] = $cronograma[0]['progress'];
             //$data['cron_costo_total']=$cronograma[0]['cron_costo_total'];
             //return response()->json(['DATA'=>$data], 201);
 
-            $actividades=CronActividade::where('cron_id','=',$request->get('cron_id'))
-            ->get();
-            $data2=$actividades;
+            $actividades = CronActividade::where('cron_id', '=', $request->get('cron_id'))
+                ->get();
+            $data2 = $actividades;
             // return response()->json(['DATA'=>$data2], 201);
 
             // $dependencias=array();
-            $index=0;
+            $index = 0;
             foreach ($actividades as $key => $value) {
-                $temp=CronDependencia::where('id',$value->id)->get();
-                if(sizeof($temp)>0){
-                $dependencias[$index]=$temp;
-                $index++;
+                $temp = CronDependencia::where('id', $value->id)->get();
+                if (sizeof($temp) > 0) {
+                    $dependencias[$index] = $temp;
+                    $index++;
                 }
-                
             }
             // $index2=0;
             // $temp2=array();
@@ -308,9 +377,9 @@ class CronogramasController extends Controller
             //      # code...
             //     $temp2[$index2]=$value;
             //      $index2++;
-                 
+
             //  }
-            
+
 
             // return response()->json(['DATA'=>$temp2], 201);
             //$canvas=Canva::join('emprendimientos','canvas.empr_id','=','emprendimientos.empr_id');
@@ -321,7 +390,7 @@ class CronogramasController extends Controller
             // if ($cronogramas != null) {
             //     return response()->json(['actividades'=>$actividades,'dependencias'=>$dependencias], 201);
             // }
-            return response()->json(['cronograma'=>$data,'actividades'=>$actividades,'dependencias'=>$dependencias], 201);
+            return response()->json(['cronograma' => $data, 'actividades' => $actividades, 'dependencias' => $dependencias], 201);
             // }
         }
         return response()->json([
@@ -338,7 +407,7 @@ class CronogramasController extends Controller
     {
         if ($request->get('id')) {
             $actividades = CronActividade::select('id')::where('id', $request->get('cron_id'));
-            if ($actividades!=null) {
+            if ($actividades != null) {
                 foreach ($actividades as $key => $value) {
                     $dependencies = CronDependencia::select('cron_dep_id')::where('id', $value)->get('cron_dep_id');
                     if ($dependencies != null) {
@@ -349,11 +418,10 @@ class CronogramasController extends Controller
                     }
                     $cron_actividade = CronActividade::find($value)->delete();
                 }
-                
             }
-            return response()->json(['estado'=>'exito'], 201);
+            return response()->json(['estado' => 'exito'], 201);
         }
-        return response()->json(['error'=>'no se envió el id'], 201);
+        return response()->json(['error' => 'no se envió el id'], 201);
     }
     public function deleteCron(Request $request)
     {
@@ -390,7 +458,7 @@ class CronogramasController extends Controller
                 $cron_emprid = Cronograma::select('cron_id')->where('empr_id', $request->get('empr_id'))->first();
                 return response()->json([
                     'habilitado' => 'no',
-                    'cron_id'=>$cron_emprid->cron_id,
+                    'cron_id' => $cron_emprid->cron_id,
                 ], 201);
             } else {
                 return response()->json([
