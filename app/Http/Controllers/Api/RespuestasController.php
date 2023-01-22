@@ -104,7 +104,7 @@ class RespuestasController extends Controller
                     $resp_id = isset($valores->resp_id) ? $valores->resp_id : null;
                     $request2 = new Request([
                         'preg_id' => isset($valores->preg_id) ? $valores->preg_id : null,
-                        'resp_desc' => isset($valores->resp_id) ? $valores->resp_id : null,
+                        //'resp_desc' => isset($valores->resp_id) ? $valores->resp_id : null,
                         'modu_nume' => isset($valores->modu_nume) ? $valores->modu_nume : null,
                         'canv_id' => isset($valores->canv_id) ? $valores->canv_id : null,
                         'resp_nume' => isset($valores->resp_nume) ? $valores->resp_nume : null,

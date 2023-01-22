@@ -90,6 +90,60 @@
             <span class="nav-link-text ms-1">Sugerencias</span>
           </a>
         </li>
+
+        <li class="nav-item">
+          <a class="nav-link text-white " href="{{route('cuestionarios.index')}}">
+            <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+              <i class="material-icons opacity-10">note</i>
+            </div>
+            <span class="nav-link-text ms-1">cuestionarios</span>
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link text-white " href="{{route('costos.index')}}">
+            <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+              <i class="material-icons opacity-10">note</i>
+            </div>
+            <span class="nav-link-text ms-1">costos</span>
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link text-white " href="{{route('opci-cuestionarios.index')}}">
+            <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+              <i class="material-icons opacity-10">note</i>
+            </div>
+            <span class="nav-link-text ms-1">Opciones Cuestionario</span>
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link text-white " href="{{route('resp-costos.index')}}">
+            <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+              <i class="material-icons opacity-10">note</i>
+            </div>
+            <span class="nav-link-text ms-1">Respuestas Costos</span>
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link text-white " href="{{route('resp-cuestionarios.index')}}">
+            <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+              <i class="material-icons opacity-10">note</i>
+            </div>
+            <span class="nav-link-text ms-1">Respuestas Cuestionarios</span>
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link text-white " href="{{route('users-preguntas.index')}}">
+            <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+              <i class="material-icons opacity-10">note</i>
+            </div>
+            <span class="nav-link-text ms-1">Preguntas Usuario</span>
+          </a>
+        </li>
         <!--li class="nav-item mt-3">
           <h6 class="ps-4 ms-2 text-uppercase text-xs text-white font-weight-bolder opacity-8">Account pages</h6>
         </li>

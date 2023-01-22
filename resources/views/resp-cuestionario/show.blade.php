@@ -1,0 +1,82 @@
+@extends('admin.layouts.app')
+
+@section('template_title')
+    {{ $respCuestionario->name ?? 'Show Resp Cuestionario' }}
+@endsection
+
+@section('content')
+<!-- start page title -->
+<div class="page-title-box">
+    <div class="container-fluid">
+        <div class="row align-items-center">
+            <div class="col-sm-6">
+                <div class="page-title">
+                    <h4>Panel De Control</h4>
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item"><a href="javascript: void(0);">Panel</a></li>
+                        <li class="breadcrumb-item"><a href="javascript: void(0);">Admin</a></li>
+                        <li class="breadcrumb-item active">{{ __('Resp Cuestionario') }}</li>
+                    </ol>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="float-end d-none d-sm-block">
+                    <a href="{{ route('resp-cuestionarios.index') }}" class="btn btn-success">Regresar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- end page title -->
+    
+<div class="container-fluid">
+    <div class="page-content-wrapper">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="float-left">
+                            <span class="card-title">Mostrar Resp Cuestionario</span>
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        
+                        <div class="form-group">
+                            <strong>Resp Cuest Id:</strong>
+                            {{ $respCuestionario->resp_cuest_id }}
+                        </div>
+                        <div class="form-group">
+                            <strong>Canv Id:</strong>
+                            {{ $respCuestionario->canv_id }}
+                        </div>
+                        <div class="form-group">
+                            <strong>Cuest Id:</strong>
+                            {{ $respCuestionario->cuest_id }}
+                        </div>
+                        <div class="form-group">
+                            <strong>Opci Cuest Id:</strong>
+                            {{ $respCuestionario->opci_cuest_id }}
+                        </div>
+                        <div class="form-group">
+                            <strong>Modu Nume:</strong>
+                            {{ $respCuestionario->modu_nume }}
+                        </div>
+                        <div class="form-group">
+                            <strong>Resp Cuest Desc:</strong>
+                            {{ $respCuestionario->resp_cuest_desc }}
+                        </div>
+                        <div class="form-group">
+                            <strong>Resp Cuest Text:</strong>
+                            {{ $respCuestionario->resp_cuest_text }}
+                        </div>
+                        <div class="form-group">
+                            <strong>Resp Cuest Esta:</strong>
+                            {{ $respCuestionario->resp_cuest_esta }}
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection

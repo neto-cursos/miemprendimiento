@@ -5,11 +5,14 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\UsersController;
 use App\Http\Controllers\Api\CanvasController;
+use App\Http\Controllers\Api\CostosController;
 use App\Http\Controllers\Api\PreguntasController;
+use App\Http\Controllers\Api\RespCostosController;
 use App\Http\Controllers\Api\RespuestasController;
 use App\Http\Controllers\WebAuth\TicketController;
 use App\Http\Controllers\Api\CronogramasController;
 use App\Http\Controllers\Api\SugerenciasController;
+use App\Http\Controllers\Api\UsersPreguntasController;
 use App\Http\Controllers\Api\EmprendimientosController;
 
 /*
@@ -65,6 +68,23 @@ Route::post('updatecron',[CronogramasController::class,'actualizarCrons']);
 Route::post('deletecron',[CronogramasController::class,'deleteCron']);
 Route::post('listcron',[CronogramasController::class,'listCrons']);
 Route::post('listallcron',[CronogramasController::class,'listAllCrons']);
+
+Route::post('getcostos',[CostosController::class,'getCosto']);
+Route::get('listcostos',[CostosController::class,'listCosto']);
+
+Route::post('getrespcostos',[RespCostosController::class,'getRespCosto']);
+Route::post('listrespcostos',[RespCostosController::class,'listRespCosto']);
+Route::post('createrespcostos',[RespCostosController::class,'createRespCosto']);
+Route::post('updaterespcostos',[RespCostosController::class,'updateRespCosto']);
+Route::post('deleterespcostos',[RespCostosController::class,'deleteRespCosto']);
+
+Route::post('inituserspreg',[UsersPreguntasController::class,'copyPreg']);
+Route::post('checkinituserspreg',[UsersPreguntasController::class,'checkInitUsersPreg']);
+Route::post('getuserspreg',[UsersPreguntasController::class,'getUsersPreg']);
+Route::post('listuserspreg',[UsersPreguntasController::class,'listUsersPreg']);
+Route::post('createuserspreg',[UsersPreguntasController::class,'createUsersPreg']);
+Route::post('updateuserspreg',[UsersPreguntasController::class,'updateUsersPreg']);
+Route::post('deleteuserspreg',[UsersPreguntasController::class,'deleteUsersPreg']);
 
 //Route::get('/tickets',[TicketController::class,'index'])->middleware('auth:sanctum');
 /*

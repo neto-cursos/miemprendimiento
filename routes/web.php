@@ -61,6 +61,36 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
             return Redirect::route('sugerencias.index');
         });
 
+        Route::resource('cuestionarios', App\Http\Controllers\admin\CuestionarioController::class)
+        ->missing(function (Request $request) {
+            return Redirect::route('cuestionarios.index');
+        });
+
+        Route::resource('costos', App\Http\Controllers\admin\CostoController::class)
+        ->missing(function (Request $request) {
+            return Redirect::route('costos.index');
+        });
+
+        Route::resource('opci-cuestionarios', App\Http\Controllers\admin\OpciCuestionarioController::class)
+        ->missing(function (Request $request) {
+            return Redirect::route('opci-cuestionarios.index');
+        });
+
+        Route::resource('resp-costos', App\Http\Controllers\admin\RespCostoController::class)
+        ->missing(function (Request $request) {
+            return Redirect::route('resp-costos.index');
+        });
+
+        Route::resource('resp-cuestionarios', App\Http\Controllers\admin\RespCuestionarioController::class)
+        ->missing(function (Request $request) {
+            return Redirect::route('resp-cuestionarios.index');
+        });
+
+        Route::resource('users-preguntas', App\Http\Controllers\admin\UsersPreguntaController::class)
+        ->missing(function (Request $request) {
+            return Redirect::route('users-preguntas.index');
+        });
+
 
 
 });
