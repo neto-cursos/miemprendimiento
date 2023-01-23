@@ -22,10 +22,11 @@ class UsersPreguntasController extends Controller
             $preguntas = Pregunta::select('preg_id', 'modu_id', 'preg_text', 'preg_nume')->get('preg_id', 'modu_id', 'preg_text', 'preg_nume');
             if ($preguntas != null) {
                 foreach ($preguntas as $key => $value) {
-                    // print_r($value);
+                    // print_r($value);                    
                     $usuarioPreguntas->modu_id = $value['modu_id'];
                     $usuarioPreguntas->usr_empr_id = $request->get('empr_id');
                     $usuarioPreguntas->usr_preg_nume = $value['preg_nume'];
+                    $usuarioPreguntas->usr_repl_preg_id = $value['preg_id'];
                     $usuarioPreguntas->usr_preg_text = $value['preg_text'];
                     $usuarioPreguntas->usr_preg_desc = $value['preg_desc'];
                     $usuarioPreguntas->usr_preg_esta = $value['preg_esta'];
@@ -35,6 +36,7 @@ class UsersPreguntasController extends Controller
                         // 'id' => $request->get('id'),
                         'empr_id' => $usuarioPreguntas->usr_empr_id,
                         'usr_preg_nume' => $usuarioPreguntas->usr_preg_nume,
+                        'usr_repl_preg_id'=>$usuarioPreguntas->usr_repl_preg_id,
                         'usr_preg_text' => $usuarioPreguntas->usr_preg_text,
                         'usr_preg_desc' => $usuarioPreguntas->usr_preg_desc,
                         'usr_preg_esta' => $usuarioPreguntas->usr_preg_esta,
@@ -59,11 +61,11 @@ class UsersPreguntasController extends Controller
         $request->validate([
             // 'preg_id' => 'required|numeric|digits_between:1,5',
             'modu_id' => 'required|numeric|digits_between:1,5',
-            'id' => 'required|numeric|digits_between:1,5',
+            // 'id' => 'required|numeric|digits_between:1,5',
             'empr_id' => 'required|numeric|digits_between:1,5',
             'usr_preg_nume' => 'required',
             'usr_preg_text' => 'required',
-            'usr_preg_desc' => 'required',
+            // 'usr_preg_desc' => 'required',
         ]);
 
         $respuesta = UsersPregunta::create([
@@ -121,11 +123,11 @@ class UsersPreguntasController extends Controller
         request()->validate(UsersPregunta::$rules);
         $request->validate([
             'modu_id' => 'required|numeric|digits_between:1,5',
-            'id' => 'numeric|digits_between:1,5',
+            // 'id' => 'numeric|digits_between:1,5',
             'empr_id' => 'required|numeric|digits_between:1,5',
             'usr_preg_nume' => 'required',
             'usr_preg_text' => 'required',
-            'usr_preg_desc' => 'required',
+            // 'usr_preg_desc' => 'required',
         ]);
         if ($request->get('usr_preg_id')) {
             $preguntas = UsersPregunta::find($request->usr_preg_id);
@@ -157,7 +159,7 @@ class UsersPreguntasController extends Controller
     {
         //$emprendimiento=[];
         if ($request->get('empr_id')) {
-            $preguntas = UsersPregunta::select('usr_preg_id', 'modu_id', 'id', 'empr_id', 'usr_preg_text', 'usr_preg_nume')
+            $preguntas = UsersPregunta::select('usr_preg_id', 'modu_id', 'id', 'empr_id', 'usr_repl_preg_id','usr_preg_text', 'usr_preg_nume')
                 ->where('empr_id', '=', $request->get('empr_id'))
                 ->get();
             if ($preguntas != null) {
