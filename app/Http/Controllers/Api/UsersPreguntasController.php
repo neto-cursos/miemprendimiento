@@ -57,25 +57,30 @@ class UsersPreguntasController extends Controller
     {
         //'id'=>Auth::user()->id,
         request()->validate(UsersPregunta::$rules);
+        // return response()->json([
+        //     'resultado' => $request->get('usr_preg_text')
+        // ], 201);
 
         $request->validate([
             // 'preg_id' => 'required|numeric|digits_between:1,5',
             'modu_id' => 'required|numeric|digits_between:1,5',
             // 'id' => 'required|numeric|digits_between:1,5',
             'empr_id' => 'required|numeric|digits_between:1,5',
-            'usr_preg_nume' => 'required',
-            'usr_preg_text' => 'required',
+            'usr_preg_nume' => 'required|numeric',
+            'usr_preg_text' => 'required|string|min:3',
             // 'usr_preg_desc' => 'required',
         ]);
 
-        $respuesta = UsersPregunta::create([
+        // $respuesta = UsersPregunta::create([
+        $respuesta = UsersPregunta::insertGetId([
             // 'preg_id' => $request->get('preg_id'),
             'modu_id' => $request->get('modu_id'),
             'id' => $request->get('id'),
             'empr_id' => $request->get('empr_id'),
-            'usr_preg_nume' => $request->get('usr_preg_nume'),
+            'usr_repl_preg_id' => $request->get('usr_repl_preg_id')?$request->get('usr_repl_preg_id'):0,
+            'usr_preg_nume' => $request->get('usr_preg_nume')?$request->get('usr_preg_nume'):-1,
             'usr_preg_text' => $request->get('usr_preg_text'),
-            'usr_preg_desc' => $request->get('usr_preg_desc'),
+            'usr_preg_desc' => $request->get('usr_preg_desc')?$request->get('usr_preg_desc'):'',
         ]);
         /*$preguntas = UsersPregunta::where('id', $request->get('id'))
             ->where('empr_nomb', $request->get('empr_nomb'))->firstOrFail();*/
@@ -84,7 +89,8 @@ class UsersPreguntasController extends Controller
             'empr_nomb' => $request->get('empr_nomb'),
         ], 201)*/
         return response()->json([
-            'resultado' => 'exito'
+            'resultado' => 'exito',
+            'usr_preg_id'=>$respuesta,
         ], 201);
     }
 

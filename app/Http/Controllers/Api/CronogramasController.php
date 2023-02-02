@@ -24,7 +24,7 @@ class CronogramasController extends Controller
         //request()->validate(Cronograma::$rules);
         $id_cron = ($request->get('cron_id') ? $request->get('cron_id') : null);
         $empr_id = $request->get('empr_id') ? $request->get('empr_id') : null;
-        if ($empr_id != null && $id_cron!=null) {
+        if ($empr_id != null && $id_cron != null) {
             $cron_empr = Cronograma::select('cron_id')->where('empr_id', $empr_id)->count();
             if ($cron_empr > 0) {
                 $cron_emprid = Cronograma::select('cron_id')->where('empr_id', $empr_id)->first();
@@ -63,7 +63,7 @@ class CronogramasController extends Controller
 
                 $respuesta = Cronograma::create($request5->all());
             }
-        }else{
+        } else {
             return response()->json([
                 'error' => 'no envió un código de emprendimiento o un cron_id válido',
             ], 201);
@@ -108,6 +108,36 @@ class CronogramasController extends Controller
                             return response()->json([
                                 'error' => 'este emprendimiento tiene otro cronograma registrado',
                             ], 201);
+                        } else {
+                            $request5 = new Request([
+                                'empr_id' => (isset($valores->empr_id)) ? $valores->empr_id : null,
+                                'cron_fech_inic' => (isset($valores->start)) ? $valores->start : null,
+                                'cron_fech_fin' => (isset($valores->end)) ? $valores->end : null,
+                                'cron_proy' => (isset($valores->name)) ? $valores->name : null,
+                                // 'cron_desc' => isset($valores->name) ? $valores->name : null,
+                                'cron_type' => (isset($valores->type)) ? $valores->type : null,
+                                'cron_hide_child' => (isset($valores->hideChildren)) ? $valores->hideChildren : false,
+                                'cron_done' => (isset($valores->cron_done)) ? $valores->cron_done : false,
+                                'cron_resp' => (isset($valores->cron_resp)) ? $valores->cron_resp : '',
+                                // 'cron_costo_total'=>
+                                // 'progress'=>,
+                            ]);
+
+                            $request5->validate([
+                                'empr_id' => 'required|numeric|digits_between:1,10',
+                                'cron_fech_inic' => 'required',
+                                'cron_fech_fin' => 'required',
+                                'cron_proy' => 'required',
+                                'cron_type' => 'required',
+                                'cron_hide_child' => 'required',
+                                'cron_done' => 'required',
+                                // 'cron_resp' => 'required',
+                            ]);
+
+
+                            $cronograma2 = Cronograma::find($id_cron);
+                            if ($cronograma2 != null)
+                                $respuesta = $cronograma2->update($request5->all());
                         }
                     } else {
                         $request5 = new Request([
@@ -136,18 +166,22 @@ class CronogramasController extends Controller
                             'cron_done' => 'required',
                             // 'cron_resp' => 'required',
                         ]);
-
                         $respuesta = Cronograma::create($request5->all());
                     }
                 }
                 $c = false;
             } else {
                 $id_acti = (isset($valores->id) ? $valores->id : null);
+                // $vectorDependencies = "[";
+                 $vectorDependencies = "";
                 if ($id_acti !== null) {
-                    if (isset($valores->acti_depen)) {
-                        // foreach ($valores->acti_depen as $key2 => $value2) {
-                        //     $va
-                        // }
+                    if (isset($valores->dependencies)) {
+                        foreach ($valores->dependencies as $key2 => $value2) {
+                            // $vectorDependencies = $vectorDependencies . "'" . $value2 . "',";
+                            $vectorDependencies = $vectorDependencies . $value2 . ",";
+                        }
+                        // $vectorDependencies = substr($vectorDependencies, 0, strlen($vectorDependencies) - 1);
+                        // $vectorDependencies = $vectorDependencies . "]";
                     }
                     $request2 = new Request([
                         'id' => isset($valores->id) ? $valores->id : null,
@@ -160,7 +194,7 @@ class CronogramasController extends Controller
                         'start' => isset($valores->start) ? $valores->start : null,
                         'end' => isset($valores->end) ? $valores->end : null,
                         'responsable' => isset($valores->responsable) ? $valores->responsable : null,
-                        'dependencies' => isset($valores->dependencies) ? null : null,
+                        'dependencies' => isset($valores->dependencies) ? $vectorDependencies : null,
                         'cantidad' => isset($valores->cantidad) ? $valores->cantidad : null,
                         'unidad' => isset($valores->unidad) ? $valores->unidad : null,
                         'costounitario' => isset($valores->costounitario) ? $valores->costounitario : null,
@@ -197,6 +231,22 @@ class CronogramasController extends Controller
                             $respuesta3 = CronActividade::create($request2->all());
                             //return response()->json($respuesta3, 201);
                         }
+                        // if (isset($valores->dependencies)) {
+                        //     foreach ($valores->dependencies as $key2 => $value2) {
+                        //          $request3=new Request([
+                        //              'id'=>isset($valores->id) ? $valores->id : null,
+                        //              'cron_dep_tareas'=>$value2,
+                        //          ]);
+                        //          $request3->validate([
+                        //             'id' => 'required',
+                        //             'cron_dep_tareas' => 'required',
+                        //         ]);
+                        //         $cron_dependencia = CronDependencia::find($id_acti);
+                        //          $respuesta3 = CronDependencia::create($request3->all());
+                        //          $vectorDependencies=$vectorDependencies.$value2.",";
+                        //     }
+                        //     $vectorDependencies=$vectorDependencies."]";
+                        // }
                     } else {
                         // $respuesta3 = Canva::create($request2->all());
                     }
@@ -240,14 +290,14 @@ class CronogramasController extends Controller
                 ->select('cronogramas.*')->get();
             $indice = 0;
             $result = array();
-
-
             foreach ($crons as $key => $value) {
                 // print_r((array)$result[$key]);
                 // return response()->json((array)$this->prepareCrons($value['cron_id']));
                 // $result = array_merge((array)$result[$key], (array)$this->prepareCrons($value['cron_id']));
                 $result[$key][$indice] = $crons[$key];
                 $activities = $this->prepareCrons($value['cron_id']);
+                // print_r($result[$key][$indice]);
+                // dd($activities);
                 foreach ($activities as $key2 => $value2) {
                     $result[$key][$indice] = $activities[$key2];
                     $indice++;
@@ -284,7 +334,7 @@ class CronogramasController extends Controller
             $data[0]['empr_id'] = $cronograma[0]['empr_id'];
             $data[0]['start'] = $cronograma[0]['cron_fech_inic'];
             $data[0]['end'] = $cronograma[0]['cron_fech_fin'];
-            $data[0]['hideChildren'] = $cronograma[0]['cron_hide_child']==0?false:true;
+            $data[0]['hideChildren'] = $cronograma[0]['cron_hide_child'] == 0 ? false : true;
             $data[0]['type'] = $cronograma[0]['cron_type'];
             $data[0]['cron_done'] = $cronograma[0]['cron_done'];
             $data[0]['cron_resp'] = $cronograma[0]['cron_resp'];
@@ -297,18 +347,46 @@ class CronogramasController extends Controller
             $indice = 1;
             $index = 0;
             foreach ($actividades as $key => $value) {
+                // dd($value['dependencies']);
                 $data[$indice] = $value;
-
-                $temp = CronDependencia::where('id', $value->id)->get();
-                if (sizeof($temp) > 0) {
-                    $dependencias[$index] = $temp;
-                    foreach ($dependencias[$index] as $key2 => $value2) {
-                        // print_r($dependencias[$index][$key2]->cron_dep_tareas."\n");
-                        $data[$indice]['dependencies'] = $data[$indice]['dependencies'] . "" . $dependencias[$index][$key2]->cron_dep_tareas . ",";
-                    }
-                    // print_r($dependencias[$index]."\n");
-                    $index++;
+                // $data[$indice]['dependencies']=array();
+                // $data[$indice]['dependencies']=array();
+                $cadena = $data[$indice]['dependencies'];
+                // print_r($cadena);
+                $depAux3 = array();
+                while (strpos($cadena, ',') !== false) {
+                    $pos1 = strpos($cadena, ',');
+                    $depAux3[]=substr($cadena, 0,$pos1);
+                    $cadena = substr($cadena, $pos1 + 1);
+                    // print_r($cadena);
                 }
+                // print_r($depAux3);
+                $data[$indice]['dependencies']=$depAux3;
+
+                // $temp = CronDependencia::where('id', $value->id)->get();
+                // if (sizeof($temp) > 0) {
+                //     $dependencias[$index] = $temp;
+                //     // $depAux3=array();
+                //     // $data[$indice]['dependencies']=array();
+                //     foreach ($dependencias[$index] as $key2 => $value2) {
+                //         // print_r($dependencias[$index][$key2]->cron_dep_tareas."\n");
+                //         // $data[$indice]['dependencies'] = $data[$indice]['dependencies'] . "" . $dependencias[$index][$key2]->cron_dep_tareas . ",";
+                //         // print_r($dependencias[$index][$key2]->cron_dep_tareas);
+                //         // print_r($data[$indice]['dependencies']);
+                //         $depAux3[]=$dependencias[$index][$key2]->cron_dep_tareas;
+                //         // print_r($depAux3);
+                //         // print_r($key2);
+                //         // array_push($data[$indice]['dependencies'],$dependencias[$index][$key2]->cron_dep_tareas);
+                //         // print_r($depAux3);
+                //         // $data[$indice]['dependencies']=$depAux3;
+                //         // print_r($data[$indice]['dependencies']);
+                //     }
+                //     // print_r("MOMMY");
+                //     $data[$indice]['dependencies']=$depAux3;
+                //     // print_r($data[$indice]['dependencies']);
+                //     // print_r($dependencias[$index]."\n");
+                //     $index++;
+                // }
                 // foreach($dependencias as $key3=>$value3){
                 //     foreach($dependencias[$key3] as $key4=>$value4)
                 //     print_r($dependencias[$key3][$key4]->cron_dep_tareas."\n");
@@ -507,5 +585,25 @@ class CronogramasController extends Controller
             $indices = $consulta3;
         }
         return $indices;
+    }
+    public function strpos_recursive($haystack, $needle, $offset = 0, &$results = array())
+    {
+        $offset = strpos($haystack, $needle, $offset);
+        if ($offset === false) {
+            return $results;
+        } else {
+            $results[] = $offset;
+            return $this->strpos_recursive($haystack, $needle, ($offset + 1), $results);
+        }
+        // $search = 'a';
+        // $found = strpos_recursive($mystring, $search);
+
+        // if ($found) {
+        //     foreach ($found as $pos) {
+        //         echo 'Found "' . $search . '" in string "' . $mystring . '" at position <b>' . $pos . '</b><br />';
+        //     }
+        // } else {
+        //     echo '"' . $search . '" not found in "' . $mystring . '"';
+        // }
     }
 }

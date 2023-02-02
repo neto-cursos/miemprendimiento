@@ -17,29 +17,27 @@ use Illuminate\Database\Eloquent\Model;
  */
 class CronDependencia extends Model
 {
-    
-    protected $primaryKey="cron_dep_id";
-    static $rules = [
-		// 'cron_dep_id' => 'required',
-    ];
+  public $timestamps = false;
+  protected $primaryKey = "cron_dep_id";
+  static $rules = [
+    // 'cron_dep_id' => 'required',
+  ];
 
-    protected $perPage = 20;
+  protected $perPage = 20;
 
-    /**
-     * Attributes that should be mass-assignable.
-     *
-     * @var array
-     */
-    protected $fillable = ['id','cron_dep_tareas'];
+  /**
+   * Attributes that should be mass-assignable.
+   *
+   * @var array
+   */
+  protected $fillable = ['id', 'cron_dep_tareas'];
 
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
-     */
-    public function cronActividade()
-    {
-        return $this->hasOne('App\Models\CronActividade', 'id', 'id');
-    }
-    
-
+  /**
+   * @return \Illuminate\Database\Eloquent\Relations\HasOne
+   */
+  public function cronActividade()
+  {
+    return $this->hasOne('App\Models\CronActividade', 'id', 'id');
+  }
 }
