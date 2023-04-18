@@ -32,7 +32,7 @@ class EmprendimientosController extends Controller
 
         if ($validator->fails()) {
             // return as appropriate
-            return response()->json(['errores' => $validator->errors()], 201);
+            return response()->json(['errores' => $validator->errors()], 422);
         }
         // $request->validate([
         //     'empr_nomb' => 'required|unique:emprendimientos,empr_nomb',
@@ -43,8 +43,10 @@ class EmprendimientosController extends Controller
             'empr_rubro' => $request->get('empr_rubro'),
             'empr_tipo' => $request->get('empr_tipo'),
         ]);
+
         $emprendimientos = Emprendimiento::where('id', $request->get('id'))
             ->where('empr_nomb', $request->get('empr_nomb'))->firstOrFail();
+
         return response()->json([
             'empr_id' => $emprendimientos->empr_id,
             'empr_nomb' => $request->get('empr_nomb'),

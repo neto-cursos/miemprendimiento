@@ -2,8 +2,11 @@
 
 namespace App\Exceptions;
 
-use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
+use PDOException;
+use Illuminate\Database\QueryException;
+use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class Handler extends ExceptionHandler
 {
@@ -45,6 +48,32 @@ class Handler extends ExceptionHandler
     {
         $this->reportable(function (Throwable $e) {
             //
+        });
+
+        $this->renderable(function (NotFoundHttpException $e, $request) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'message' => 'Ruta No encontrada.'
+                ], 404);
+            }else{
+                //return response()->view('custom_view');
+            }
+        });
+        $this->renderable(function (QueryException $e, $request) {
+            if ($request->is('api/*')) {
+                // dd($e->errorInfo[2]);
+                return response()->json([
+                    'message' => $e->errorInfo[2],
+                ], 404);
+            }
+        });
+        $this->renderable(function (PDOException $e, $request) {
+            if ($request->is('api/*')) {
+                // dd($e->errorInfo[2]);
+                return response()->json([
+                    'message' => $e->errorInfo[2],
+                ], 404);
+            }
         });
     }
 }

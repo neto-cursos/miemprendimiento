@@ -18,7 +18,7 @@ class AuthController extends Controller
     public function register(RegisterFormRequest $request): JsonResponse
     {
         //dd($request->all());
-        
+
         $user = User::create([
             'name' => $request->get('name'),
             'apellido' => $request->get('apellido'),
@@ -93,9 +93,68 @@ class AuthController extends Controller
             //$id = User::where('empr_id', $request->get('empr_id'))->firstOrFail();
             //$user_id = DB::table('personal_access_tokens')->where('id', $user_token)->first(); echo $user_id->id;
             //return "auth";
-            return response()->json(['user' => 'auth','user_id'=>$user_id->tokenable_id], 201);
+            return response()->json(['user' => 'auth', 'user_id' => $user_id->tokenable_id], 201);
         } else {
             return "guest";
         }
+    }
+
+    public function sendResetLink(Request $request)
+    {
+        $request->validate(['email' => 'required|email']);
+
+        $token = app(PersonalAccessToken::class)->forceFill([
+            'tokenable_id' => $user->getKey(),
+            'tokenable_type' => get_class($user),
+            'name' => 'password_reset',
+            'token' => hash('sha256', Str::random(40)),
+            'abilities' => ['reset-password'],
+        ]);
+        $token->save();
+
+        $status = Password::sendResetLink(
+            $request->only('email')
+        );
+
+        return $status === Password::RESET_LINK_SENT
+            ? response()->json(['message' => 'Password reset link sent successfully'])
+            : response()->json(['message' => 'Unable to send password reset link'], 400);
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|confirmed|min:8',
+            'token' => 'required'
+        ]);
+
+        $token = PersonalAccessToken::findToken($request->input('token'));
+        if (!$token || !in_array('reset-password', $token->abilities)) {
+            return response()->json(['message' => 'Invalid password reset token'], 400);
+        }
+
+        // Update the user's password
+        $user->forceFill([
+            'password' => Hash::make($request->input('password'))
+        ])->save();
+
+        // Revoke the password reset token
+        $token->delete();
+
+        return response()->json(['message' => 'Password reset successfully']);
+
+        $status = Password::reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function ($user) use ($request) {
+                $user->forceFill([
+                    'password' => Hash::make($request->input('password'))
+                ])->save();
+            }
+        );
+
+        return $status === Password::PASSWORD_RESET
+            ? response()->json(['message' => 'Password reset successfully'])
+            : response()->json(['message' => 'Unable to reset password'], 400);
     }
 }

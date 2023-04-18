@@ -16,6 +16,28 @@ class CanvasController extends Controller
     //
     public function createCanv(Request $request)
     {
+        // try {
+        //     $accessToken = $request->bearerToken();
+        //     $token = PersonalAccessToken::findToken($accessToken);
+        //     return response()->json(['mensaje' => 'sesión cerrada'], 201);
+        // } catch (\Exception $e) {
+        //     return response()->json(['error_logout' => $e], 501);
+        // }
+
+        // if ($emprendimientos->empr_nomb == $request->empr_nomb)
+        //         $pass = true;
+        //     else {
+        //         request()->validate(Emprendimiento::$rules);
+        //         $validator = validator($request->all(), [
+        //             'empr_nomb' => 'required|unique:emprendimientos,empr_nomb',
+        //         ]);
+        //         if ($validator->fails()) {
+        //            return response()->json(['errores' => $validator->errors()], 201);
+        //         } else
+        //             $pass = true;
+        //     }
+
+
         //'id'=>Auth::user()->id,
         //$unique_id= echo floor(time()-999999999);
         request()->validate(Canva::$rules);
@@ -31,8 +53,7 @@ class CanvasController extends Controller
         /*$consulta = Canva::select('canv_id')
             ->where('canv_id', '=', $request->canv_id)
             ->get()->count();*/
-        if ($consulta >0) {
-            
+        if ($consulta >0) {    
             return response()->json(['error', 'emprendimiento ya tiene asignado un canva']);
         }
         $respuesta = Canva::create([
