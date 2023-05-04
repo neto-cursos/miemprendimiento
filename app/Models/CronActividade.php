@@ -49,7 +49,7 @@ class CronActividade extends Model
      *
      * @var array
      */
-    protected $fillable = ['id','cron_id','empr_id','cron_acti_padr','type','project','displayorder','name','start','end','responsable','dependencies','cantidad','unidad','costounitario','monto','notas','progress','cron_done','estado'];
+    protected $fillable = ['id','cron_id','empr_id','cron_acti_padr','resp_id','type','project','displayorder','name','start','end','responsable','dependencies','cantidad','unidad','costounitario','monto','notas','progress','cron_done','estado'];
 
 
     /**

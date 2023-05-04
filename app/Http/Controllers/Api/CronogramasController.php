@@ -187,6 +187,7 @@ class CronogramasController extends Controller
                         'id' => isset($valores->id) ? $valores->id : null,
                         'cron_id' => $id_cron != null ? $id_cron : null,
                         'empr_id' => isset($valores->empr_id) ? $valores->empr_id : null,
+                        'resp_id' =>isset($valores->resp_id) ? $valores->resp_id : null,
                         'type' => isset($valores->type) ? $valores->type : null,
                         'project' => isset($valores->project) ? $valores->project : null,
                         'displayorder' => isset($valores->displayorder) ? $valores->displayorder : null,
@@ -216,7 +217,7 @@ class CronogramasController extends Controller
                             'name' => 'required',
                             'start' => 'required',
                             'end' => 'required',
-                            'responsable' => 'required',
+                            //'responsable' => 'required',
                         ]);
                         $cron_actividades = CronActividade::find($id_acti);
                         if ($inicio === true) {

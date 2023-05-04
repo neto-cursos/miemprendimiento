@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\Emprendimiento;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
+use App\Models\CronActividade;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
@@ -192,6 +193,7 @@ class RespuestasController extends Controller
         foreach ($array as $key => $value) {
             if (isset($value['resp_id'])) {
                 $respuestas = Respuesta::find($value['resp_id'])->delete();
+                $crono_acti=CronActividade::where('resp_id',$value['resp_id'])->delete();
                 if ($respuestas != null) {
                 }
             }
