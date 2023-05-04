@@ -41,7 +41,7 @@ class RespCosto extends Model
      *
      * @var array
      */
-    protected $fillable = ['canv_id','cost_id','modu_nume','resp_cost_desc','resp_cost_acti','resp_cost_monto','resp_cost_esta'];
+    protected $fillable = ['canv_id','cost_id','modu_nume','resp_cost_desc','resp_cost_acti','resp_cost_monto','resp_id_ref','resp_cost_esta'];
 
 
     /**

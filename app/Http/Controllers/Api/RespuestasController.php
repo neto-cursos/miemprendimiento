@@ -43,6 +43,7 @@ class RespuestasController extends Controller
             'resp_nume' => $request->get('resp_nume'),
             'resp_text' => $request->get('resp_text'),
             'resp_desc' => $request->get('resp_desc'),
+            'resp_id_ref'=>($request->get('resp_id_ref'!=null)) ? $request->get('resp_id_ref') : null,
         ]);
         /*$respuestas = Respuesta::where('id', $request->get('id'))
             ->where('empr_nomb', $request->get('empr_nomb'))->firstOrFail();*/
@@ -111,6 +112,7 @@ class RespuestasController extends Controller
                         'resp_nume' => isset($valores->resp_nume) ? $valores->resp_nume : null,
                         'resp_text' => isset($valores->resp_text) ? $valores->resp_text : null,
                         'resp_desc' => isset($valores->resp_desc) ? $valores->resp_desc : null,
+                        'resp_id_ref' => isset($valores->resp_id_ref) ? $valores->resp_id_ref : null,
                         'resp_esta' => 1,
                     ]);
                     $request2->validate([

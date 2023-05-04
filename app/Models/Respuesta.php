@@ -37,7 +37,7 @@ class Respuesta extends Model
      *
      * @var array
      */
-    protected $fillable = ['preg_id','resp_desc','modu_nume','canv_id','resp_nume','resp_text','resp_esta'];
+    protected $fillable = ['preg_id','resp_desc','modu_nume','canv_id','resp_nume','resp_text','resp_id_ref','resp_esta'];
 
 
     /**

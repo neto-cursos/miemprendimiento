@@ -29,7 +29,7 @@ class RespCostosController extends Controller
             //'resp_cost_desc' => 'required',
             //'resp_cost_esta'=>'required',
         ]);
-
+        // $resp_id_ref=isset($request->get('resp_id_ref')) ? $request->get('resp_id_ref') : null;
         $respuesta = RespCosto::create([
             'canv_id' => $request->get('canv_id'),
             'cost_id' => $request->get('cost_id'),
@@ -38,6 +38,7 @@ class RespCostosController extends Controller
             //'resp_cost_desc' => $request->get('resp_cost_desc'),
             'resp_cost_acti' => $request->get('resp_cost_acti'),
             'resp_cost_monto' => $request->get('resp_cost_monto'),
+            'resp_id_ref' => ($request->get('resp_id_ref'!=null)) ? $request->get('resp_id_ref') : null,
             //'resp_cost_esta' => $request->get('resp_cost_esta'),
         ]);
         /*$RespCostos = RespCosto::where('id', $request->get('id'))
@@ -159,6 +160,7 @@ class RespCostosController extends Controller
                     'resp_cost_nume' => isset($valores->resp_cost_nume) ? $valores->resp_cost_nume : null,
                     'resp_cost_acti' => isset($valores->resp_cost_acti) ? $valores->resp_cost_acti : null,
                     'resp_cost_monto' => isset($valores->resp_cost_monto) ? $valores->resp_cost_monto : null,
+                    'resp_id_ref' => isset($valores->resp_id_ref) ? $valores->resp_id_ref : null,
                     'resp_cost_esta' => 1,
                 ]);
                 $request2->validate([
